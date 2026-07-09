@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+
+<h2>Chat App WebSocket Test</h2>
+
+<hr>
+
+<h3>JWT Token</h3>
+
+<input
+        type="text"
+        id="token"
+        placeholder="Paste JWT Token Here"
+        size="100"
+/>
+
+<button onclick="connect()">
+    Connect
+</button>
+
+<hr>
+
+<h3>Conversation</h3>
+
+<input
+        type="number"
+        id="conversationId"
+        placeholder="Conversation ID"
+/>
+
+<button onclick="subscribeConversation()">
+    Subscribe
+</button>
+
+<hr>
+
+<h3>Send Message</h3>
+
+<input
+        type="text"
+        id="message"
+        placeholder="Message"
+/>
+
+<button onclick="sendMessage()">
+    Send
+</button>
+
+<hr>
+
+<h3>Messages</h3>
+
+<div id="messages"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+
+<script>
+
+    let stompClient = null;
+
+    function connect() {
+
+        const token =
+            document.getElementById("token").value;
+
+        const socket =
+            new SockJS("/ws");
+
+        stompClient =
+            new StompJs.Client({
+
+                webSocketFactory: () => socket,
+
+                connectHeaders: {
+                    Authorization: "Bearer " + token
+                },
+
+                onConnect: () => {
+
+                    console.log("Connected");
+
+                    alert("Connected Successfully");
+                },
+
+                onStompError: (frame) => {
+
+                    console.error(frame);
+
+                    alert("Connection Failed");
+                }
+            });
+
+        stompClient.activate();
+    }
+
+    function subscribeConversation() {
+
+        const conversationId =
+            document.getElementById(
+                "conversationId"
+            ).value;
+
+        stompClient.subscribe(
+
+            "/topic/conversation/" +
+            conversationId,
+
+            (message) => {
+
+                const body =
+                    JSON.parse(message.body);
+
+                document.getElementById(
+                    "messages"
+                ).innerHTML +=
+                    "<p>" +
+                    body.content +
+                    "</p>";
+            }
+        );
+
+        alert(
+            "Subscribed to conversation " +
+            conversationId
+        );
+    }
+
+    function sendMessage() {
+
+        const conversationId =
+            document.getElementById(
+                "conversationId"
+            ).value;
+
+        const content =
+            document.getElementById(
+                "message"
+            ).value;
+
+        stompClient.publish({
+
+            destination:
+                "/app/chat.sendMessage",
+
+            body: JSON.stringify({
+
+                conversationId:
+                    Number(conversationId),
+
+                content:
+                content
+            })
+        });
+    }
+
+</script>
+
+</body>
+</html>
