@@ -17,5 +17,4 @@ public class MessageResponse {
 
     private UserResponse sender;
 
-    private ConversationResponse conversation;
 }

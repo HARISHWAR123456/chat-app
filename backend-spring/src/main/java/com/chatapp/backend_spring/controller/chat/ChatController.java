@@ -24,11 +24,11 @@ public class ChatController {
         return chatService.createPrivateConversation(request);
     }
 
-//    @PostMapping("/message")
-//    public MessageResponse sendMessage(@RequestBody SendMessageRequest request ) {
-//
-//        return chatService.sendMessage(request);
-//    }
+    @PostMapping("/send-message")
+    public MessageResponse sendMessage(@RequestBody SendMessageRequest request ) {
+
+        return chatService.sendMessage(request);
+    }
 
     @GetMapping("/get-conversations")
     public List<ConversationListResponse>

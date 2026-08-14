@@ -23,17 +23,17 @@ public class WebSocketController {
 
 //        MessageResponse response = chatService.sendMessage(request);
 
-        MessageResponse response =
-                chatService.sendMessage(
-                        request,
-                        principal.getName()
-                );
+//        MessageResponse response =
+//                chatService.sendMessage(
+//                        request,
+//                        principal.getName()
+//                );
 
 
-        messagingTemplate.convertAndSend("/topic/conversation/"+request.getConversationId(),response);
-        //Sends the response message to all WebSocket clients currently subscribed
-        //to /topic/conversation/{conversationId} in real time
-
+//        messagingTemplate.convertAndSend("/topic/conversation/"+request.getConversationId(),response);
+//        //Sends the response message to all WebSocket clients currently subscribed
+//        //to /topic/conversation/{conversationId} in real time
+//
 
     }
 }

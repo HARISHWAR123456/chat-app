@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Socket Test</title>
+</head>
+
+<body>
+
+    <h1>Socket.IO Test</h1>
+
+    <button id="sendBtn">Send Message</button>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+
+        const socket = io("http://localhost:3000", {
+            auth: {
+                token:"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0aGFydW5AdGVzdC5jb20iLCJpZCI6MiwiaWF0IjoxNzg1NzM1MjYyLCJleHAiOjE3ODU3Mzg4NjJ9.SfgscDTskxA0jGX_-Z7t6RG7Z6IETsJEsBcNzz0BS70"
+            }
+        });
+
+        socket.on("connect", () => {
+
+            console.log("Connected");
+
+            socket.emit("join-room", {
+                conversationId:6
+                
+            });
+
+        });
+
+
+        socket.on("joined-room", (data) => {
+    console.log("Joined Room:", data);
+});
+
+        socket.on("chat-history", (history) => {
+            console.log("Chat History:");
+            console.log(history);
+        });
+
+
+        document.getElementById("sendBtn").addEventListener("click", () => {
+
+                console.log("NEW CODE RUNNING");
+
+            socket.emit("chat-message", {
+                message :"hii this is from node message 3",
+                conversationId:6
+            });
+
+
+
+        });
+
+    </script>
+
+</body>`
+
+</html>

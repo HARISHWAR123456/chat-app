@@ -36,7 +36,6 @@ public class ChatMapper {
                 .content(message.getContent())
                 .createdAt(message.getCreatedAt())
                 .sender(mapUser(message.getSender()))
-                .conversation(mapConversation(message.getConversation()))
                 .build();
     }
 

@@ -13,12 +13,13 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-    private static final String SECRET_KEY = "yourverylongsecuresecretkeyyourverylongsecuresecretkey";
+    private static final String SECRET_KEY = "p/r1CDL7kZAqUKbUspEWmAmwPY2gr14UmvnPw3ghrc0=";
 
-  public String generateToken(String email){
+  public String generateToken(String email ,Long id){
       return Jwts
               .builder()
               .subject(email)
+              .claim("id",id)
               .issuedAt(new Date())
               .expiration(new Date(System.currentTimeMillis()+1000*60*60))
               .signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();

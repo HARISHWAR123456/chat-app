@@ -76,7 +76,9 @@ public class ChatService {
     }
 
     @Transactional
-    public MessageResponse sendMessage(SendMessageRequest request ,String email) {
+    public MessageResponse sendMessage(SendMessageRequest request ) {
+
+        String email= SecurityContextHolder.getContext().getAuthentication().getName();
 
         User sender = userRepository.findByEmail(email)
                 .orElseThrow(()-> new UserNotFoundException("Current user not found"));;

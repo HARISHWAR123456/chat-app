@@ -70,7 +70,7 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(()-> new UserNotFoundException("Current User Not Found"));
 
-        String token = jwtService.generateToken(user.getEmail());
+        String token = jwtService.generateToken(user.getEmail(),user.getId());
 
         RefreshToken refreshToken=refreshTokenService.createRefreshToken(user);
 
@@ -97,7 +97,7 @@ public class AuthService {
         }
 
         String accessToken = jwtService.generateToken(
-                refreshToken.getUser().getEmail()
+                refreshToken.getUser().getEmail(),refreshToken.getUser().getId()
         );
 
         return new AuthResponse(
