@@ -19,6 +19,7 @@
 // }
 // }
 
+import { getAuth } from "../../services/common/authStorage";
 
 export namespace UserFeature {
 
@@ -56,11 +57,17 @@ export namespace UserFeature {
         error: string | null;
     }
 
-    export const initialState: UserState = {
-        user: null,
-        token: null,
-        refreshToken: null,
-        loading: false,
-        error: null,
-    };
+export const initialState: UserState = {
+
+    user: getAuth()?.user ?? null,
+
+    token: getAuth()?.token ?? null,
+
+    refreshToken:
+        getAuth()?.refreshToken ?? null,
+
+    loading: false,
+
+    error: null,
+};
 }

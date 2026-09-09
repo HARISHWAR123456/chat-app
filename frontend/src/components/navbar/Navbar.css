@@ -1,0 +1,189 @@
+.navbar {
+    height: 10vh;
+    min-height: 10vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 40px;
+
+    border-bottom: 1px solid #27272a;
+
+    background: #09090b;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================
+   PAGE HEADING
+   ========================= */
+
+.page-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.eyebrow {
+    margin: 0;
+
+    font-size: 12px;
+    color: #71717a;
+}
+
+.page-heading h1 {
+    margin: 0;
+
+    font-size: 22px;
+    line-height: 1.2;
+
+    font-weight: 600;
+    letter-spacing: -0.4px;
+}
+
+
+/* =========================
+   ACTIONS
+   ========================= */
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+/* =========================
+   SEARCH
+   ========================= */
+
+.search-box {
+    width: 280px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 0 10px;
+
+    border: 1px solid #27272a;
+    border-radius: 8px;
+
+    background: #111113;
+    color: #71717a;
+
+    box-sizing: border-box;
+}
+
+.search-box:focus-within {
+    border-color: #52525b;
+}
+
+.search-box input {
+    flex: 1;
+
+    min-width: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #f4f4f5;
+
+    font-size: 13px;
+}
+
+.search-box input::placeholder {
+    color: #71717a;
+}
+
+.search-shortcut {
+    padding: 3px 6px;
+
+    border: 1px solid #27272a;
+    border-radius: 5px;
+
+    color: #71717a;
+
+    font-size: 10px;
+}
+
+
+/* =========================
+   ICON BUTTONS
+   ========================= */
+
+.icon-button {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+
+    border: 1px solid #27272a;
+    border-radius: 8px;
+
+    background: #111113;
+    color: #a1a1aa;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.icon-button:hover {
+    background: #18181b;
+    color: #ffffff;
+}
+
+.notification-button span {
+    position: absolute;
+
+    top: 8px;
+    right: 8px;
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: #ffffff;
+}
+
+
+/* =========================
+   AVATAR
+   ========================= */
+
+.top-avatar {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #3f3f46;
+    border-radius: 50%;
+
+    background: #27272a;
+    color: #ffffff;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.top-avatar:hover {
+    background: #3f3f46;
+}

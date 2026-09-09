@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, type PayloadAction} from "@reduxjs/toolk
 import { UserFeature } from "./userFeatures";
 import { jwtDecode } from "jwt-decode";
 import { LoginService } from "../../services/common/loginservice";
+import { saveAuth,clearAuth } from "../../services/common/authStorage";
 
 
 export const loginUser = createAsyncThunk(
@@ -46,6 +47,8 @@ const userSlice = createSlice({
             state.token = null;
             state.refreshToken = null;
             state.error = null;
+
+            clearAuth();
         },
 
         clearError(state) {
@@ -68,6 +71,12 @@ const userSlice = createSlice({
             state.user = action.payload.user;
             state.token = action.payload.token;
             state.refreshToken = action.payload.refreshToken;
+
+            saveAuth(
+                action.payload.user,
+                action.payload.token,
+                action.payload.refreshToken
+            );
 
         });
 

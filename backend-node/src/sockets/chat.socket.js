@@ -10,21 +10,15 @@ export default function registerChatEvents(socket,io){
                 data.conversationId,
                 socket.api
             );
+
             console.log("Allowed:",allowed);
+            
             if (!allowed) {
                 return socket.emit("error", {
                     message: "Access denied"
                 });
             }
-            socket.join(data.conversationId);
-
-            const history = await getMessages(
-                socket.api,
-                data.conversationId
-            );
-            console.log("History from Spring:", history);
-
-            socket.emit("chat-history", history);  
+            socket.join(data.conversationId); 
 
             socket.emit("joined-room", {
                 conversationId: data.conversationId
@@ -49,7 +43,15 @@ export default function registerChatEvents(socket,io){
        
             const message = await sendMessage( socket.api,data.conversationId,data.message);
 
-            io.to(data.conversationId).emit("user-message", message);
+
+console.log("Message saved by Spring:", message);
+
+console.log(
+    "Broadcasting to room:",
+    data.conversationId
+);
+
+            io.to(String(data.conversationId)).emit("user-message", message);
 
 
         }catch(error){
@@ -76,6 +78,22 @@ export default function registerChatEvents(socket,io){
             active: data.active
         })
    });
+
+
+   socket.on("leave-room", (data) => {
+
+    if (!data?.conversationId) {
+        return;
+    }
+
+    const conversationId = String(data.conversationId);
+
+    socket.leave(conversationId);
+
+    console.log(
+        `User ${socket.user.id} left room ${conversationId}`
+    );
+});
 
     
 }

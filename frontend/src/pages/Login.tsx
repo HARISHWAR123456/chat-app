@@ -41,16 +41,14 @@ function Login() {
 
     e.preventDefault();
 
-    const result = await dispatch(
+     await dispatch(
       loginUser({
         email,
         password,
       })
     );
 
-    if (loginUser.fulfilled.match(result)) {
-      navigate("/dashboard");
-    }
+
   };
 
 

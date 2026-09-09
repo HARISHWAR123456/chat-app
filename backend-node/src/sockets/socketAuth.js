@@ -13,7 +13,7 @@ export function socketAuth(socket,next){
         next();
 
     } catch (error) {
-console.log(error)
+        console.log(error)
         next(new Error("Unauthorized"));
 
     }
