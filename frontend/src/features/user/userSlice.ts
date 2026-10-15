@@ -1,8 +1,8 @@
-import { createAsyncThunk, createSlice, type PayloadAction} from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { UserFeature } from "./userFeatures";
 import { jwtDecode } from "jwt-decode";
 import { LoginService } from "../../services/common/loginservice";
-import { saveAuth,clearAuth } from "../../services/common/authStorage";
+import { saveAuth, clearAuth, updateStoredUser } from "../../services/common/authStorage";
 
 
 export const loginUser = createAsyncThunk(
@@ -26,7 +26,7 @@ export const loginUser = createAsyncThunk(
                 token: data.token,
                 refreshToken: data.refreshToken,
             };
-        }catch(error){
+        } catch {
                return rejectWithValue(
                 "Unable to connect to the server"
             );
@@ -53,6 +53,11 @@ const userSlice = createSlice({
 
         clearError(state) {
             state.error = null;
+        },
+
+        updateUserProfile(state, action: PayloadAction<UserFeature.User>) {
+            state.user = action.payload;
+            updateStoredUser(action.payload);
         },
 
     },
@@ -92,6 +97,6 @@ const userSlice = createSlice({
     },
 });
 
-export const { logout ,clearError} = userSlice.actions;
+export const { logout, clearError, updateUserProfile } = userSlice.actions;
 
 export default userSlice.reducer;

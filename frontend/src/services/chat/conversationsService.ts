@@ -24,4 +24,27 @@ export const ConversationService = {
 
         return await response.json();
     },
+
+    async createPrivateConversation(userId: number): Promise<Conversation> {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(
+            `${SPRING_API_URL}/api/conversations/private`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: JSON.stringify({ userId }),
+            }
+        );
+
+        if (!response.ok) {
+            const err = await response.text();
+            throw new Error(err || "Failed to create conversation");
+        }
+
+        return await response.json();
+    },
 };

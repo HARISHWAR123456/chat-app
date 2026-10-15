@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
 import type { GetMessages } from "../../model/common/messages";
 
-const socket = io("http://localhost:3000", {
+const socket = io( {
     autoConnect: false,
 });
 
@@ -48,6 +48,21 @@ export function sendMessage(conversationId: number,message: string) {
         conversationId,
         message,
     });
+}
+
+export function sendTyping(conversationId: number, active: boolean) {
+    socket.emit("typing", {
+        conversationId,
+        active,
+    });
+}
+
+export function onTyping(callback: (data: { userId: number; active: boolean }) => void) {
+    socket.on("typing", callback);
+}
+
+export function offTyping(callback: (data: { userId: number; active: boolean }) => void) {
+    socket.off("typing", callback);
 }
 
 export function onUserMessage(callback: (message: GetMessages.Message) => void) {

@@ -1,5 +1,5 @@
-import { useMemo, useState, FormEvent ,useEffect} from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, FormEvent ,useEffect} from "react";
+import { useNavigate, Link } from "react-router-dom";
 import {useAppDispatch,useAppSelector,} from "../app/hooks";
 import { loginUser } from "../features/user/userSlice";
 import "../styles/Login.css";
@@ -27,15 +27,22 @@ function Login() {
 
   }, [user, navigate]);
 
-  const stars = useMemo(
-    () =>
-      Array.from({ length: 14 }, () => ({
-        top: `${Math.random() * 100}%`,
-        left: `${Math.random() * 100}%`,
-        delay: `${Math.random() * 4}s`,
-      })),
-    []
-  );
+const STATIC_STARS = [
+  { top: "12%", left: "18%", delay: "0.2s" },
+  { top: "28%", left: "82%", delay: "1.4s" },
+  { top: "45%", left: "12%", delay: "2.1s" },
+  { top: "72%", left: "75%", delay: "0.8s" },
+  { top: "85%", left: "25%", delay: "3.2s" },
+  { top: "15%", left: "62%", delay: "2.5s" },
+  { top: "60%", left: "45%", delay: "1.1s" },
+  { top: "35%", left: "38%", delay: "0.5s" },
+  { top: "90%", left: "88%", delay: "2.8s" },
+  { top: "8%", left: "90%", delay: "1.9s" },
+  { top: "78%", left: "10%", delay: "3.5s" },
+  { top: "52%", left: "92%", delay: "0.9s" },
+  { top: "22%", left: "48%", delay: "2.2s" },
+  { top: "65%", left: "60%", delay: "1.7s" },
+];
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 
@@ -60,7 +67,7 @@ function Login() {
       <div className="blob blob--3"></div>
       <div className="blob blob--4"></div>
 
-      {stars.map((star, i) => (
+      {STATIC_STARS.map((star, i) => (
         <div
           key={i}
           className="star"
@@ -243,7 +250,7 @@ function Login() {
 
 
         <p className="footer-text">
-          New to Nexa? <a href="#">Create an account</a>
+          New to Nexa? <Link to="/register">Create an account</Link>
         </p>
 
       </div>

@@ -31,6 +31,17 @@ public class Message {
 
     private LocalDateTime createdAt;
 
+    @Builder.Default
+    private boolean seen = false;
+
+    private LocalDateTime seenAt;
+
+    @Builder.Default
+    private boolean deletedForEveryone = false;
+
+    @Builder.Default
+    private boolean forwarded = false;
+
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();

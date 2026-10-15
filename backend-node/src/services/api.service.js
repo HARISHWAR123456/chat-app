@@ -3,7 +3,7 @@ import axios from "axios";
 export function createSpringApi(token) {
 
     const api = axios.create({
-        baseURL: "http://localhost:8080/api",
+        baseURL: `${process.env.SPRING_BACKEND_URL}/api`,
         headers: {
             Authorization: `Bearer ${token}`
         }

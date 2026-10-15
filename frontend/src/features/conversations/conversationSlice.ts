@@ -12,7 +12,7 @@ export const fetchConversationsList=createAsyncThunk("/conversation/fetchConvers
 
             return response;
 
-        } catch (error) {
+        } catch {
 
             return rejectWithValue(
                 "Unable to fetch conversations"

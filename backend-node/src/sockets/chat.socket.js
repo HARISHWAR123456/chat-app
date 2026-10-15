@@ -3,38 +3,45 @@ import { sendMessage }         from "../services/message.service.js"
 
 export default function registerChatEvents(socket,io){
 
-    socket.on("join-room", async (data) => {
-        try {
-            const allowed = await canJoinConversation(
-                socket.user.id,
-                data.conversationId,
-                socket.api
-            );
+socket.on("join-room", async (data) => {
+    try {
+        const allowed = await canJoinConversation(
+            socket.user.id,
+            data.conversationId,
+            socket.api
+        );
 
-            console.log("Allowed:",allowed);
-            
-            if (!allowed) {
-                return socket.emit("error", {
-                    message: "Access denied"
-                });
-            }
-            socket.join(data.conversationId); 
+        console.log("Allowed:", allowed);
 
-            socket.emit("joined-room", {
-                conversationId: data.conversationId
+        if (!allowed) {
+            return socket.emit("error", {
+                message: "Access denied"
             });
-
-        } catch (error) {
-
-            console.error("Failed to join room:",error);
-
-            socket.emit("error", {
-                message: "Unable to join conversation ,Please Try Again"
-            });
-
         }
 
-    });
+        const conversationId = String(data.conversationId);
+
+        socket.join(conversationId);
+
+        console.log(
+            "User joined room:",
+            conversationId,
+            "Rooms:",
+            socket.rooms
+        );
+
+        socket.emit("joined-room", {
+            conversationId: data.conversationId
+        });
+
+    } catch (error) {
+        console.error("Failed to join room:", error);
+
+        socket.emit("error", {
+            message: "Unable to join conversation, Please Try Again"
+        });
+    }
+});
 
     socket.on("chat-message",async (data)=> {
 
@@ -43,14 +50,16 @@ export default function registerChatEvents(socket,io){
        
             const message = await sendMessage( socket.api,data.conversationId,data.message);
 
+            console.log("Message saved by Spring:", message);
 
-console.log("Message saved by Spring:", message);
-
-console.log(
-    "Broadcasting to room:",
-    data.conversationId
-);
-
+            console.log(
+                "Broadcasting to room:",
+                data.conversationId
+            );
+            console.log(
+                "Sockets in room:",
+                io.sockets.adapter.rooms.get(String(data.conversationId))
+            );
             io.to(String(data.conversationId)).emit("user-message", message);
 
 

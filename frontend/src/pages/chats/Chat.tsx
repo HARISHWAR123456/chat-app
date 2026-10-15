@@ -1,140 +1,149 @@
 import { useEffect, useState } from "react";
 import ConversationList from "../../components/chats/conversationList/ConversationList";
 import ChatWindow from "../../components/chats/chatWindow/ChatWindow";
+import NewChatModal from "../../components/modals/NewChatModal";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import type {Conversation} from "../../model/common/chats";
+import type { Conversation } from "../../model/common/chats";
 import { fetchConversationsList } from "../../features/conversations/conversationSlice";
-import { getMessages ,addMessage} from "../../features/messages/messageSlice";
-import "./Chat.css";
-import { connectSocket ,disconnectSocket ,joinConversation,leaveConversation ,onUserMessage,offUserMessage} from "../../services/socket/socket";
+import { getMessages, addMessage } from "../../features/messages/messageSlice";
+import { soundFX } from "../../utils/sound";
+import {
+  connectSocket,
+  disconnectSocket,
+  joinConversation,
+  leaveConversation,
+  onUserMessage,
+  offUserMessage,
+  onTyping,
+  offTyping,
+} from "../../services/socket/socket";
 import { GetMessages } from "../../model/common/messages";
-
+import "./Chat.css";
 
 function Chat() {
+  const dispatch = useAppDispatch();
+  const messages = useAppSelector((state) => state.message.messages);
+  const messageLoading = useAppSelector((state) => state.message.loading);
+  const messageError = useAppSelector((state) => state.message.error);
+  const conversations = useAppSelector(
+    (state) => state.conversation.conversations
+  );
 
-    const dispatch = useAppDispatch();
+  const [selectedConversation, setSelectedConversation] =
+    useState<Conversation | null>(null);
+  const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
+  const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
 
-    const messages = useAppSelector((state) => state.message.messages);
+  // Connect socket and load conversation list
+  useEffect(() => {
+    connectSocket();
+    dispatch(fetchConversationsList());
 
-    const messageLoading=useAppSelector((state)=>state.message.loading);
+    return () => {
+      disconnectSocket();
+    };
+  }, [dispatch]);
 
-    const messageError=useAppSelector((state)=>state.message.error);
-
-    const conversations = useAppSelector(state => state.conversation.conversations);
-
-    const [selectedConversation,setSelectedConversation] = useState<Conversation | null>(null);
-
-useEffect(() => {
-
-    console.log(
-        "REDUX MESSAGES CHANGED:",
-        messages
-    );
-
-}, [messages]);
-
-
-
-
-
-  //socket connect
-    useEffect(() => {
-        connectSocket();
-
-        dispatch(fetchConversationsList());
-        
-        return () => {
-           disconnectSocket();
-        };
-
-    }, [dispatch]);
-
-
-    // 2. Real-time message listener
-useEffect(() => {
-
-    const handleUserMessage = (
-        message: GetMessages.Message
-    ) => {
-
-                console.log(
-            "REAL-TIME MESSAGE RECEIVED:",
-            message
-        );
-
-        dispatch(addMessage(message));
-
-            console.log(
-        "Dispatched addMessage"
-    );
-
+  // Real-time message listener
+  useEffect(() => {
+    const handleUserMessage = (message: GetMessages.Message) => {
+      dispatch(addMessage(message));
+      soundFX.playReceive();
+      setIsOtherUserTyping(false);
+      // Refresh conversations so last message snippet is updated
+      dispatch(fetchConversationsList());
     };
 
     onUserMessage(handleUserMessage);
-
     return () => {
-        offUserMessage(handleUserMessage);
+      offUserMessage(handleUserMessage);
+    };
+  }, [dispatch]);
+
+  // Real-time typing listener
+  useEffect(() => {
+    const handleTyping = (data: { userId: number; active: boolean }) => {
+      setIsOtherUserTyping(data.active);
     };
 
-}, [dispatch]);
+    onTyping(handleTyping);
+    return () => {
+      offTyping(handleTyping);
+    };
+  }, []);
 
-  //Selected conversation exists → socket joins its room.
-useEffect(() => {
-
+  // Join/leave conversation room
+  useEffect(() => {
     if (!selectedConversation) {
-        return;
+      return;
     }
 
-    joinConversation(
-        selectedConversation.conversationId
-    );
+    joinConversation(selectedConversation.conversationId);
 
     return () => {
-
-        leaveConversation(
-            selectedConversation.conversationId
-        );
-
+      leaveConversation(selectedConversation.conversationId);
     };
+  }, [selectedConversation]);
 
-}, [selectedConversation]);
+  // Fetch messages when conversation changes
+  useEffect(() => {
+    if (!selectedConversation) {
+      return;
+    }
 
-
-//Selected conversation changes → fetch its existing messages.
-    useEffect(() => {
-        if (!selectedConversation) {
-            return;
-        }
-
-        dispatch( getMessages({
-                conversationId: selectedConversation.conversationId,
-                page: 0,
-                size: 20,
-            })
-        );
-
-    }, [selectedConversation, dispatch]);
-
-
-    return (
-        <div className="chat-page">
-
-            <ConversationList
-                conversations={conversations}
-                selectedConversation={selectedConversation}
-                onSelectConversation={
-                    setSelectedConversation
-                }
-            />
-
-            <ChatWindow
-                conversation={selectedConversation}
-                messages={messages}
-                loading={messageLoading}
-                error={messageError}
-            />
-
-        </div>
+    dispatch(
+      getMessages({
+        conversationId: selectedConversation.conversationId,
+        page: 0,
+        size: 50,
+      })
     );
+  }, [selectedConversation, dispatch]);
+
+  const handleSelectConversation = (conv: Conversation) => {
+    setIsOtherUserTyping(false);
+    setSelectedConversation(conv);
+  };
+
+  const handleBackToConversations = () => {
+    setIsOtherUserTyping(false);
+    setSelectedConversation(null);
+  };
+
+  return (
+    <div className={`chat-page ${selectedConversation ? "has-active-chat" : ""}`}>
+      {/* Conversations Column */}
+      <div className="conversation-list-pane">
+        <ConversationList
+          conversations={conversations}
+          selectedConversation={selectedConversation}
+          onSelectConversation={handleSelectConversation}
+          onOpenNewChat={() => setIsNewChatModalOpen(true)}
+        />
+      </div>
+
+      {/* Chat Window Column */}
+      <div className="chat-window-pane">
+        <ChatWindow
+          conversation={selectedConversation}
+          messages={messages}
+          loading={messageLoading}
+          error={messageError}
+          isTyping={isOtherUserTyping}
+          onBack={handleBackToConversations}
+          onOpenNewChat={() => setIsNewChatModalOpen(true)}
+        />
+      </div>
+
+      <NewChatModal
+        isOpen={isNewChatModalOpen}
+        onClose={() => setIsNewChatModalOpen(false)}
+        onConversationCreated={(conv) => {
+          setSelectedConversation(conv);
+        }}
+      />
+    </div>
+  );
 }
+
 export default Chat;
