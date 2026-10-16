@@ -1,96 +1,88 @@
 import {
-    Bell,
-    Search,
-    SlidersHorizontal,
+  Bell,
+  Search,
+  Menu,
 } from "lucide-react";
+import { useAppSelector } from "../../app/hooks";
+import { getAvatarGradient, getInitials } from "../../utils/avatar";
 import "./Navbar.css";
 
 type SidebarSection = "chats" | "profile" | "settings";
 
 type NavbarProps = {
-    activeSection: SidebarSection;
-    onProfileClick: () => void;
+  activeSection: SidebarSection;
+  onProfileClick: () => void;
+  onToggleMobileSidebar: () => void;
 };
 
 const sectionTitles = {
-    chats: "Chats",
-    profile: "Profile",
-    settings: "Settings",
+  chats: "Messages",
+  profile: "My Profile",
+  settings: "Settings",
 } as const;
 
 function Navbar({
-    activeSection,
-    onProfileClick,
+  activeSection,
+  onProfileClick,
+  onToggleMobileSidebar,
 }: NavbarProps) {
+  const user = useAppSelector((state) => state.user.user);
+  const username = user?.username || "Guest";
+  const userInitials = getInitials(username);
+  const avatarGradient = getAvatarGradient(user?.id || username);
 
-    return (
-        <header className="navbar">
+  return (
+    <header className="navbar">
+      <div className="navbar-left">
+        <button
+          className="mobile-menu-btn"
+          type="button"
+          onClick={onToggleMobileSidebar}
+          aria-label="Open sidebar menu"
+        >
+          <Menu size={20} />
+        </button>
 
-            <div className="page-heading">
+        <div className="page-heading">
+          <p className="eyebrow">Nexa Hub</p>
+          <h1>{sectionTitles[activeSection]}</h1>
+        </div>
+      </div>
 
-                <p className="eyebrow">
-                    Personal workspace
-                </p>
+      <div className="navbar-actions">
+        <label className="search-box">
+          <Search size={15} />
+          <input
+            type="search"
+            placeholder="Search in Nexa..."
+            aria-label="Search"
+          />
+          <span className="search-shortcut">⌘/</span>
+        </label>
 
-                <h1>
-                    {sectionTitles[activeSection]}
-                </h1>
+        <button
+          className="icon-button notification-button"
+          type="button"
+          aria-label="Notifications"
+          title="Notifications"
+        >
+          <Bell size={17} />
+          <span className="unread-dot" />
+        </button>
 
-            </div>
-
-
-            <div className="navbar-actions">
-
-                <label className="search-box">
-
-                    <Search size={17} />
-
-                    <input
-                        type="search"
-                        placeholder="Search conversations"
-                        aria-label="Search conversations"
-                    />
-
-                    <span className="search-shortcut">
-                        ⌘ /
-                    </span>
-
-                </label>
-
-
-                <button
-                    className="icon-button"
-                    type="button"
-                    aria-label="Open filters"
-                >
-                    <SlidersHorizontal size={18} />
-                </button>
-
-
-                <button
-                    className="icon-button notification-button"
-                    type="button"
-                    aria-label="View notifications"
-                >
-                    <Bell size={18} />
-
-                    <span />
-                </button>
-
-
-                <button
-                    className="top-avatar"
-                    type="button"
-                    onClick={onProfileClick}
-                    aria-label="Open profile"
-                >
-                    ?
-                </button>
-
-            </div>
-
-        </header>
-    );
+        <button
+          className="top-avatar"
+          type="button"
+          onClick={onProfileClick}
+          style={{ background: avatarGradient }}
+          title={`Signed in as ${username}`}
+          aria-label="Open profile"
+        >
+          <span>{userInitials}</span>
+        </button>
+      </div>
+    </header>
+  );
 }
 
 export default Navbar;

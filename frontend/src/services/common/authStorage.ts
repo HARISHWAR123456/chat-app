@@ -31,6 +31,10 @@ export function getAuth() {
 }
 
 
+export function updateStoredUser(user: UserFeature.User) {
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+}
+
 export function clearAuth() {
 
     localStorage.removeItem(USER_KEY);

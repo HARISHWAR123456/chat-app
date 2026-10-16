@@ -47,8 +47,11 @@ const messageSlice = createSlice({
 
         },
 
-        addMessage(state,action: PayloadAction<GetMessages.Message>) {
-            state.messages.push(action.payload);
+        addMessage(state, action: PayloadAction<GetMessages.Message>) {
+            const exists = state.messages.some((m) => m.id === action.payload.id);
+            if (!exists) {
+                state.messages.push(action.payload);
+            }
         },
 
     },
@@ -72,7 +75,17 @@ const messageSlice = createSlice({
 
                 state.loading = false;
 
-                state.messages = action.payload.messages;
+                // Sort chronologically ascending (oldest first, latest at bottom)
+                const sorted = [...action.payload.messages].sort((a, b) => {
+                    const timeA = new Date(a.createdAt).getTime();
+                    const timeB = new Date(b.createdAt).getTime();
+                    if (!isNaN(timeA) && !isNaN(timeB) && timeA !== timeB) {
+                        return timeA - timeB;
+                    }
+                    return a.id - b.id;
+                });
+
+                state.messages = sorted;
 
                 state.currentPage =
                     action.payload.currentPage;
